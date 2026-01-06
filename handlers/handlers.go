@@ -155,3 +155,30 @@ func (h *Handler) ExportJobs(w http.ResponseWriter, r *http.Request) {
 	
 	json.NewEncoder(w).Encode(jobs)
 }
+
+// GetJobsByStatus handler untuk GET /jobs/status/{status}
+func (h *Handler) GetJobsByStatus(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		h.sendError(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	path := strings.TrimPrefix(r.URL.Path, "/jobs/status/")
+	status := strings.ToUpper(path)
+
+	if status == "" {
+		h.sendError(w, "Status is required", http.StatusBadRequest)
+		return
+	}
+
+	allJobs := h.queue.GetAllJobs()
+	filteredJobs := make([]*models.Job, 0)
+
+	for _, job := range allJobs {
+		if string(job.Status) == status {
+			filteredJobs = append(filteredJobs, job)
+		}
+	}
+
+	h.sendJSON(w, filteredJobs, http.StatusOK)
+}

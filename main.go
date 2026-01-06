@@ -57,7 +57,8 @@ func main() {
 	mux.HandleFunc("/logs", handler.GetLogs)
 	mux.HandleFunc("/health", handler.HealthCheck)
 	mux.HandleFunc("/export", handler.ExportJobs)
-	
+	mux.HandleFunc("/jobs/status/", handler.GetJobsByStatus)
+
 	server := &http.Server{
 		Addr:    PORT,
 		Handler: mux,
