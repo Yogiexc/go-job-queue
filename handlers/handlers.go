@@ -182,3 +182,36 @@ func (h *Handler) GetJobsByStatus(w http.ResponseWriter, r *http.Request) {
 
 	h.sendJSON(w, filteredJobs, http.StatusOK)
 }
+
+// GetStats handler untuk GET /stats
+func (h *Handler) GetStats(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		h.sendError(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	jobs := h.queue.GetAllJobs()
+	
+	stats := map[string]interface{}{
+		"total_jobs": len(jobs),
+		"pending":    0,
+		"processing": 0,
+		"done":       0,
+		"failed":     0,
+	}
+
+	for _, job := range jobs {
+		switch job.Status {
+		case models.StatusPending:
+			stats["pending"] = stats["pending"].(int) + 1
+		case models.StatusProcessing:
+			stats["processing"] = stats["processing"].(int) + 1
+		case models.StatusDone:
+			stats["done"] = stats["done"].(int) + 1
+		case models.StatusFailed:
+			stats["failed"] = stats["failed"].(int) + 1
+		}
+	}
+
+	h.sendJSON(w, stats, http.StatusOK)
+}
