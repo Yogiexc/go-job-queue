@@ -144,3 +144,16 @@ func (q *JobQueue) Close() {
 	close(q.jobChan)
 	q.addLog("[SYSTEM] Queue ditutup")
 }
+
+// DeleteJob menghapus job berdasarkan ID
+func (q *JobQueue) DeleteJob(jobID string) bool {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+
+	if _, exists := q.jobs[jobID]; exists {
+		delete(q.jobs, jobID)
+		q.addLog(fmt.Sprintf("[DELETE] Job %s dihapus", jobID))
+		return true
+	}
+	return false
+}

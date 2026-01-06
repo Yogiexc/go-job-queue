@@ -215,3 +215,27 @@ func (h *Handler) GetStats(w http.ResponseWriter, r *http.Request) {
 
 	h.sendJSON(w, stats, http.StatusOK)
 }
+
+// DeleteJob handler untuk DELETE /jobs/{id}
+func (h *Handler) DeleteJob(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodDelete {
+		h.sendError(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	path := strings.TrimPrefix(r.URL.Path, "/jobs/")
+	jobID := path
+
+	if jobID == "" {
+		h.sendError(w, "Job ID is required", http.StatusBadRequest)
+		return
+	}
+
+	deleted := h.queue.DeleteJob(jobID)
+	if !deleted {
+		h.sendError(w, "Job not found", http.StatusNotFound)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}

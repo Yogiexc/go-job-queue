@@ -44,15 +44,16 @@ func main() {
 		fmt.Fprintf(w, "- GET    /logs       - Get system logs\n")
 		fmt.Fprintf(w, "- GET    /health     - Health check\n")
 	})
-	mux.HandleFunc("/jobs", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodPost {
-			handler.CreateJob(w, r)
-		} else if r.Method == http.MethodGet {
-			handler.GetAllJobs(w, r)
-		} else {
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		}
-	})
+	mux.HandleFunc("/jobs/", func(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		handler.GetJob(w, r)
+	} else if r.Method == http.MethodDelete {
+		handler.DeleteJob(w, r)  // ← TAMBAH INI
+	} else {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	}
+})
+
 	mux.HandleFunc("/jobs/", handler.GetJob)
 	mux.HandleFunc("/logs", handler.GetLogs)
 	mux.HandleFunc("/health", handler.HealthCheck)
