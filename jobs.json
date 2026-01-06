@@ -1,0 +1,8 @@
+Welcome to Go Job Queue API
+
+Available endpoints:
+- POST   /jobs       - Create new job
+- GET    /jobs       - Get all jobs
+- GET    /jobs/{id}  - Get job by ID
+- GET    /logs       - Get system logs
+- GET    /health     - Health check

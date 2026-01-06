@@ -140,3 +140,18 @@ func (h *Handler) sendError(w http.ResponseWriter, message string, statusCode in
 	w.WriteHeader(statusCode)
 	json.NewEncoder(w).Encode(ErrorResponse{Error: message})
 }
+
+// ExportJobs handler untuk GET /export
+func (h *Handler) ExportJobs(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		h.sendError(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	jobs := h.queue.GetAllJobs()
+	
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Disposition", "attachment; filename=jobs-export.json")
+	
+	json.NewEncoder(w).Encode(jobs)
+}
